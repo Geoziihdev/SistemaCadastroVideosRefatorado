@@ -10,7 +10,7 @@ public class CategoriaDAO {
     public void cadastrarCategoria(Categoria cat) {
         String sql = "INSERT INTO categoria (nome, descricao) VALUES (?, ?)";
         try (Connection conn = Conexao.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, cat.getNome());
             stmt.setString(2, cat.getDescricao());
@@ -21,31 +21,31 @@ public class CategoriaDAO {
                 cat.setIdCategoria(rs.getInt(1));
             }
 
-            System.out.println("Categoria cadastrada com sucesso!");
-
         } catch (SQLException e) {
-            System.out.println("Erro ao cadastrar categoria: " + e.getMessage());
+            throw new RuntimeException("Erro ao cadastrar categoria: " + e.getMessage());
         }
     }
 
     public List<Categoria> listarCategorias() {
         List<Categoria> lista = new ArrayList<>();
         String sql = "SELECT * FROM categoria";
+
         try (Connection conn = Conexao.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Categoria cat = new Categoria();
-                cat.setIdCategoria(rs.getInt("id"));
+                cat.setIdCategoria(rs.getInt(1));
                 cat.setNome(rs.getString("nome"));
                 cat.setDescricao(rs.getString("descricao"));
                 lista.add(cat);
             }
 
         } catch (SQLException e) {
-            System.out.println("Erro ao listar categorias: " + e.getMessage());
+            throw new RuntimeException("Erro ao listar categorias: " + e.getMessage());
         }
+
         return lista;
     }
 }

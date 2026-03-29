@@ -17,9 +17,7 @@ public class Video {
         this.categoria = categoria;
     }
 
-    public Video() {
-        
-    }
+    public Video() {}
 
     public int getIdVideo() { return idVideo; }
     public void setIdVideo(int idVideo) { this.idVideo = idVideo; }
@@ -35,20 +33,4 @@ public class Video {
 
     public Categoria getCategoria() { return categoria; }
     public void setCategoria(Categoria categoria) { this.categoria = categoria; }
-
-    public void cadastrarVideo() {
-        System.out.println("Vídeo " + titulo + " cadastrado!");
-    }
-
-    public void editarVideo() {
-        System.out.println("Vídeo " + titulo + " editado!");
-    }
-
-    public void excluirVideo() {
-        System.out.println("Vídeo " + titulo + " excluído!");
-    }
-
-    public void listarVideos() {
-        System.out.println("Listando vídeos...");
-    }
 }

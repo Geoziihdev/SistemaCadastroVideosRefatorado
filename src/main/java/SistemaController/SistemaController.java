@@ -7,6 +7,10 @@ import model.Categoria;
 import model.Usuario;
 import model.Video;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class SistemaController {
     private final CategoriaDAO categoriaDAO = new CategoriaDAO();
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
@@ -24,7 +28,86 @@ public class SistemaController {
         videoDAO.cadastrarVideo(video);
     }
 
-    public void listarVideos() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+    public java.util.List<Video> listarVideos() {
+    return videoDAO.listarVideos();
+}
+
+    public String cadastrarVideo(String titulo, String descricao, String dataStr, String categoriaStr) {
+        try {
+            if (titulo.isEmpty() || descricao.isEmpty() || dataStr.isEmpty() || categoriaStr.isEmpty()) {
+                return "Preencha todos os campos!";
+            }
+
+            int idCategoria = Integer.parseInt(categoriaStr);
+            Date dataUtil = new SimpleDateFormat("dd/MM/yyyy").parse(dataStr);
+            java.sql.Date dataSql = new java.sql.Date(dataUtil.getTime());
+
+            Categoria categoria = new Categoria();
+            categoria.setIdCategoria(idCategoria);
+
+            Video video = new Video();
+            video.setTitulo(titulo);
+            video.setDescricao(descricao);
+            video.setDataPublicacao(dataSql);
+            video.setCategoria(categoria);
+
+            videoDAO.cadastrarVideo(video);
+
+            return "Vídeo cadastrado com sucesso!";
+
+        } catch (NumberFormatException e) {
+            return "ID da categoria inválido!";
+        } catch (ParseException e) {
+            return "Formato de data inválido! Use dd/MM/yyyy";
+        }
     }
+
+    public String cadastrarCategoria(String nome, String descricao) {
+    if (nome.isEmpty()) {
+        return "O campo nome é obrigatório!";
+    }
+
+    try {
+        Categoria categoria = new Categoria();
+        categoria.setNome(nome);
+        categoria.setDescricao(descricao);
+
+        categoriaDAO.cadastrarCategoria(categoria);
+        return "Categoria cadastrada com sucesso!";
+
+    } catch (Exception e) {
+        return "Erro ao cadastrar categoria!";
+    }
+}
+
+public String cadastrarUsuario(String email, String senha, String confirma) {
+    if (email.isEmpty() || senha.isEmpty() || confirma.isEmpty()) {
+        return "Preencha todos os campos!";
+    }
+
+    if (!senha.equals(confirma)) {
+        return "As senhas não coincidem!";
+    }
+
+    try {
+        Usuario usuario = new Usuario();
+        usuario.setNome(email);
+        usuario.setEmail(email);
+        usuario.setSenha(senha);
+
+        usuarioDAO.cadastrarUsuario(usuario);
+        return "Usuário cadastrado com sucesso!";
+    } catch (Exception e) {
+        return "Erro ao tentar cadastrar usuário!";
+    }
+}
+
+public boolean autenticarUsuario(String email, String senha) {
+    if (email.isEmpty() || senha.isEmpty()) {
+        return false;
+    }
+
+    return usuarioDAO.autenticar(email, senha);
+}
+
 }

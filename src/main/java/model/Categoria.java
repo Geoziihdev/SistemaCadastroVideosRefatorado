@@ -5,7 +5,6 @@ public class Categoria {
     private String nome;
     private String descricao;
 
-    // Construtor completo
     public Categoria(int idCategoria, String nome, String descricao) {
         this.idCategoria = idCategoria;
         this.nome = nome;
@@ -22,8 +21,4 @@ public class Categoria {
 
     public String getDescricao() { return descricao; }
     public void setDescricao(String descricao) { this.descricao = descricao; }
-
-    public void cadastrarCategoria() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 }

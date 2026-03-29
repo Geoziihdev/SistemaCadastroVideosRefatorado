@@ -1,7 +1,6 @@
 package SistemaView;
 
-import SistemaDAO.CategoriaDAO;
-import model.Categoria;
+import SistemaController.SistemaController;
 import javax.swing.*;
 import java.awt.*;
 
@@ -9,12 +8,15 @@ public class CadastroCategoriaView extends JFrame {
 
     private JTextField txtNome, txtDescricao;
     private JButton btnCadastrar, btnVoltar;
+    private final SistemaController controller;
 
     public CadastroCategoriaView() {
         setTitle("Cadastro de Categoria");
         setSize(400, 250);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        controller = new SistemaController();
 
         JLabel lblTitulo = new JLabel("Cadastro de Categoria", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 14));
@@ -37,36 +39,27 @@ public class CadastroCategoriaView extends JFrame {
 
         add(panel);
 
-        btnCadastrar.addActionListener(e -> {
-            String nome = txtNome.getText().trim();
-            String descricao = txtDescricao.getText().trim();
-
-            if (nome.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "O campo nome é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            try {
-                Categoria cat = new Categoria();
-                cat.setNome(nome);
-                cat.setDescricao(descricao);
-
-                CategoriaDAO dao = new CategoriaDAO();
-                dao.cadastrarCategoria(cat); // salvar no banco
-
-                JOptionPane.showMessageDialog(this, "Categoria cadastrada com sucesso!");
-                new MenuView().setVisible(true);
-                dispose();
-
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Erro ao cadastrar categoria!", "Erro", JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        btnCadastrar.addActionListener(e -> cadastrarCategoria());
 
         btnVoltar.addActionListener(e -> {
             new MenuView().setVisible(true);
             dispose();
         });
+    }
+
+    private void cadastrarCategoria() {
+        String nome = txtNome.getText().trim();
+        String descricao = txtDescricao.getText().trim();
+
+        String mensagem = controller.cadastrarCategoria(nome, descricao);
+
+        if (mensagem.equals("Categoria cadastrada com sucesso!")) {
+            JOptionPane.showMessageDialog(this, mensagem);
+            new MenuView().setVisible(true);
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, mensagem, "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public static void main(String[] args) {
