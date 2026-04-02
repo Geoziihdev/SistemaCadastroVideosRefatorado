@@ -16,6 +16,8 @@ public class SistemaController {
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
     private final VideoDAO videoDAO = new VideoDAO();
 
+    private final ValidadorCadastroUsuario validadorCadastroUsuario = new ValidadorCadastroUsuario();
+
     public void cadastrarCategoria(Categoria categoria) {
         categoriaDAO.cadastrarCategoria(categoria);
     }
@@ -29,8 +31,8 @@ public class SistemaController {
     }
 
     public java.util.List<Video> listarVideos() {
-    return videoDAO.listarVideos();
-}
+        return videoDAO.listarVideos();
+    }
 
     public String cadastrarVideo(String titulo, String descricao, String dataStr, String categoriaStr) {
         try {
@@ -63,51 +65,55 @@ public class SistemaController {
     }
 
     public String cadastrarCategoria(String nome, String descricao) {
-    if (nome.isEmpty()) {
-        return "O campo nome é obrigatório!";
+        if (nome.isEmpty()) {
+            return "O campo nome é obrigatório!";
+        }
+
+        try {
+            Categoria categoria = new Categoria();
+            categoria.setNome(nome);
+            categoria.setDescricao(descricao);
+
+            categoriaDAO.cadastrarCategoria(categoria);
+            return "Categoria cadastrada com sucesso!";
+
+        } catch (Exception e) {
+            return "Erro ao cadastrar categoria!";
+        }
     }
 
-    try {
-        Categoria categoria = new Categoria();
-        categoria.setNome(nome);
-        categoria.setDescricao(descricao);
+    public String cadastrarUsuario(String email, String senha, String confirma) {
 
-        categoriaDAO.cadastrarCategoria(categoria);
-        return "Categoria cadastrada com sucesso!";
+        if (!validadorCadastroUsuario.camposObrigatoriosPreenchidos(email, senha, confirma)) {
+            return "Preencha todos os campos!";
+        }
 
-    } catch (Exception e) {
-        return "Erro ao cadastrar categoria!";
-    }
-}
+        if (!validadorCadastroUsuario.emailValido(email)) {
+            return "E-mail inválido!";
+        }
 
-public String cadastrarUsuario(String email, String senha, String confirma) {
-    if (email.isEmpty() || senha.isEmpty() || confirma.isEmpty()) {
-        return "Preencha todos os campos!";
-    }
+        if (!validadorCadastroUsuario.senhasConferem(senha, confirma)) {
+            return "As senhas não coincidem!";
+        }
 
-    if (!senha.equals(confirma)) {
-        return "As senhas não coincidem!";
-    }
+        try {
+            Usuario usuario = new Usuario();
+            usuario.setNome(email);
+            usuario.setEmail(email);
+            usuario.setSenha(senha);
 
-    try {
-        Usuario usuario = new Usuario();
-        usuario.setNome(email);
-        usuario.setEmail(email);
-        usuario.setSenha(senha);
-
-        usuarioDAO.cadastrarUsuario(usuario);
-        return "Usuário cadastrado com sucesso!";
-    } catch (Exception e) {
-        return "Erro ao tentar cadastrar usuário!";
-    }
-}
-
-public boolean autenticarUsuario(String email, String senha) {
-    if (email.isEmpty() || senha.isEmpty()) {
-        return false;
+            usuarioDAO.cadastrarUsuario(usuario);
+            return "Usuário cadastrado com sucesso!";
+        } catch (Exception e) {
+            return "Erro ao tentar cadastrar usuário!";
+        }
     }
 
-    return usuarioDAO.autenticar(email, senha);
-}
+    public boolean autenticarUsuario(String email, String senha) {
+        if (email == null || email.trim().isEmpty() || senha == null || senha.trim().isEmpty()) {
+            return false;
+        }
 
+        return usuarioDAO.autenticar(email, senha);
+    }
 }
